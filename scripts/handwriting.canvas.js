@@ -85,6 +85,7 @@
         this.cxt.moveTo(x, y);
         this.handwritingX.push(x);
         this.handwritingY.push(y);
+        if (this.inputCallback !== null) this.inputCallback();
     };
 
 
@@ -97,6 +98,7 @@
             this.cxt.stroke();
             this.handwritingX.push(x);
             this.handwritingY.push(y);
+            if (this.inputCallback !== null) this.inputCallback();
         }
     };
 
@@ -128,6 +130,7 @@
         this.handwritingY.push(touchY);
         this.cxt.beginPath();
         this.cxt.moveTo(touchX, touchY);
+        if (this.inputCallback !== null) this.inputCallback();
     };
 
     handwriting.Canvas.prototype.touchMove = function(e) {
@@ -143,6 +146,7 @@
         this.handwritingY.push(y);
         this.cxt.lineTo(x, y);
         this.cxt.stroke();
+        if (this.inputCallback !== null) this.inputCallback();
     };
 
     handwriting.Canvas.prototype.touchEnd = function(e) {

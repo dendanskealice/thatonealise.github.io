@@ -2,51 +2,59 @@ $(document).ready(function() {
     const fadeSpeed = 2000;
     const sleepDuration = fadeSpeed;
     const responses = [
-        "Let me tell you.",
         "Jeg skal fortælle dig.",
-        "Very well.",
-        "If you so desire.",
-        "As you wish.",
-        "So be it.",
-        "Alright."
     ];
 
+    const questions = new Map();
+    questions.set("Hvem er du?", "about");
+    questions.set("hvem er du?", "about");
+    questions.set("Hvem er du", "about");
+    questions.set("hvem er du", "about");
+
     let answerContent = $("#user-inquiry-content");
+
+    let questionField = $("#user-question-field");
+    let questionCanvas = $("#user-question-canvas");
+    let questionCanvasColor = questionCanvas.css("border-color");
+    let questionEraseBtn = $("#question-erase");
+    let questionEraseBtnColor = questionEraseBtn.css("border-color");
+
     let welcomeText = $("#alice-ask");
     let responseText = $("#alice-tell");
-    let questionField = $("#user-question-field");
 
-    let writingTimeout = 10;
+    let writingTimeout = 3; // in seconds
     let writingTimer = 0;
     let writingTimerSet = false;
 
-    let questionCanvas = new handwriting.Canvas(document.getElementById("user-question-canvas"));
-    
-    questionCanvas.setLineWidth(2);
-
-    questionCanvas.setOptions(
+    let questionCanvasContext = new handwriting.Canvas(document.getElementById("user-question-canvas"));
+    questionCanvasContext.setLineWidth(2);
+    questionCanvasContext.setOptions(
         {
             language: "da",
             numOfReturn: 1
         }
     );
 
-    questionCanvas.setCallBack(function(data, err) {
-        if(err) throw err;
-        else console.log(data);
-    });
-
-    questionCanvas.setInputCallBack(function() {
-        writingTimer = writingTimeout;
-        if (!writingTimerSet) {
-            writingTimerSet = true;
-            beginTimeoutCountdown();
+    questionCanvasContext.setCallBack(function(data, err) {
+        if (err) {
+            throw err;
+        } else {
+            let question = questions.get(data[0]);
+            console.log(data);
+            if (question !== undefined) {
+                $.get("inquires/" + question + ".html", function(answer) {
+                    answerQuestion(answer); 
+                });
+            }
         }
     });
 
+    questionCanvasContext.setInputCallBack(function() {
+        resetTimeoutCountdown();
+    });
+
     let askedBefore = false;
-    async function changeInquiry(answer) {
-        questionBtn.prop("disabled", true);
+    async function answerQuestion(answer) {
         if (askedBefore) {
             answerContent.fadeOut(fadeSpeed);
             await sleep(sleepDuration);
@@ -60,7 +68,6 @@ $(document).ready(function() {
         await sleep(sleepDuration);
         answerContent.fadeIn(sleepDuration);
         await sleep(sleepDuration);
-        questionBtn.prop("disabled", false);
         if (!askedBefore) {
             askedBefore = true;
         }
@@ -69,21 +76,9 @@ $(document).ready(function() {
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-  
-    /*
-    $(".user-question").click(function() {
-        $.get("inquires/" + selectedQuestion.attr("id") + ".html", function(inquiry) {
-            changeInquiry(inquiry); 
-        });
-    });
-    */
 
-    $("#question-erase").click(function() {
-        questionCanvas.erase();
-    });
-
-    $("#question-submit").click(function() {
-        questionCanvas.recognize();
+    questionEraseBtn.click(function() {
+        questionCanvasContext.erase();
     });
 
     welcomeUser();
@@ -101,9 +96,23 @@ $(document).ready(function() {
     async function beginTimeoutCountdown() {
         while (writingTimer > 0) {
             writingTimer--;
-
             await sleep(1000);
         }
         writingTimerSet = false;
+        questionCanvasContext.recognize();
+    }
+
+    function resetTimeoutCountdown() {
+        questionCanvas.stop();
+        questionEraseBtn.stop();
+        questionCanvas.css("border-color", questionCanvasColor);
+        questionCanvas.animate({borderColor:"transparent"}, writingTimeout * 1000);
+        questionEraseBtn.css("color", questionEraseBtnColor);
+        questionEraseBtn.animate({color:"black"}, writingTimeout * 1000);
+        writingTimer = writingTimeout;
+        if (!writingTimerSet) {
+            writingTimerSet = true;
+            beginTimeoutCountdown();
+        }
     }
 });
