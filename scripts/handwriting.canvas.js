@@ -63,6 +63,10 @@
         this.callback = callback;
     };
 
+    handwriting.Canvas.prototype.setInputCallBack = function(callback) {
+        this.inputCallback = callback;
+    };
+
     handwriting.Canvas.prototype.setOptions = function(options) {
         this.options = options;
     };
@@ -104,6 +108,7 @@
         this.trace.push(w);
         this.drawing = false;
         if (this.allowUndo) this.step.push(this.canvas.toDataURL());
+        if (this.inputCallback !== null) this.inputCallback();
     };
 
 
@@ -147,6 +152,7 @@
         w.push([]);
         this.trace.push(w);
         if (this.allowUndo) this.step.push(this.canvas.toDataURL());
+        if (this.inputCallback !== null) this.inputCallback();
     };
 
     handwriting.Canvas.prototype.undo = function() {

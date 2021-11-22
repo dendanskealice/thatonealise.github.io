@@ -16,6 +16,12 @@ p {
   word-spacing: 2px;
 }
 
+canvas {
+  border: 1px solid;
+  border-color: #8d807c;
+  cursor: crosshair;
+}
+
 .content {
   display: grid;
   margin: auto;
@@ -23,34 +29,30 @@ p {
   padding-bottom: 1.5em;
 }
 
-.dropdown-button {
-  background-color: #ffffff;
-  text-align: left;
+.button-reset-question {
+  background-color: transparent;
+  border: 1px;
+  border-radius: 360px;
+  color: #8d807c;
+  text-align: center;
   padding: 4px 0px;
   font-size: 1em;
-  min-width: 160px;
-  border: none;
-  border-bottom: solid 4px #ADD8E6;
+  min-width: 80px;
   margin-left: 10px;
   cursor: pointer;
-  -webkit-transition: background-color 100ms linear;
-  -ms-transition: background-color 100ms linear;
-  transition: background-color 100ms linear;
+  -webkit-transition: font-size 100ms linear;
+  -ms-transition: font-size 100ms linear;
+  transition: font-size 100ms linear;
 }
 
-.dropdown-button:hover {
-  background-color: #DDEEF4;
+.button-reset-question:hover {
+  font-size: larger;
 }
 
-.dropdown-button:disabled {
+.button-reset-question:disabled {
   background-color: transparent;
   border-color: transparent;
   cursor: default;
-}
-
-.dropdown-button.open {
-  background-color: #DDEEF4;
-  border-color: #DDEEF4;
 }
 
 .form {

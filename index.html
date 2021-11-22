@@ -2,23 +2,13 @@
 layout: default
 ---
 
-<div class="content" style="padding-right: 0.5em;">
-    <h1 id="alice-ask">Spørge.</h1>
+<div class="content" style="padding-right:0.5em;">
+    <h1 id="alice-ask">Skrive, og jeg skal svare.</h1>
 </div>
-<div class="content" style="padding-left: 10em;color: #a99477;">
-    <canvas id="user-question-canvas" width="500" height="80" style="border: 1px solid; cursor: crosshair;"></canvas>
-    <div class="form" id="user-inquiry-form">
-        <h1>I'd like to</h1>
-        <div class="dropdown">
-            <button class="dropdown-button" id="user-inquiry-button">
-                <h1 id="user-inquiry-text" style="color: #a99477;">...</h1>
-            </button>
-            <div class="dropdown-content" id="user-questions">
-                <h1 class="user-question" id="about">learn about you.</h1>
-                <h1 class="user-question" id="portfolio">see your work.</h1>
-                <h1 class="user-question" id="blog">read your blog.</h1>
-            </div>
-        </div>
+<div class="content" style="padding-left:10em;color:#a99477;" id="user-question-field">
+    <div style="display:inline-flex;">
+        <button class="button-reset-question" id="question-erase"><h1><i class="fas fa-redo"></i></h1></button>
+        <canvas id="user-question-canvas" width="500" height="80"></canvas>
     </div>
 </div>
 <div class="content">
