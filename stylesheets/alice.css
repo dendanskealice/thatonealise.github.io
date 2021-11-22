@@ -4,7 +4,7 @@ body {
   margin: 0;
   font-family: 'Lora', serif;
   font-size: .7em;
-  padding-top: 3em;
+  padding-top: 6em;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -19,7 +19,7 @@ p {
 .content {
   display: grid;
   margin: auto;
-  width: 50%;
+  width: 35%;
   padding-bottom: 1.5em;
 }
 
@@ -42,6 +42,12 @@ p {
   background-color: #DDEEF4;
 }
 
+.dropdown-button:disabled {
+  background-color: transparent;
+  border-color: transparent;
+  cursor: default;
+}
+
 .dropdown-button.open {
   background-color: #DDEEF4;
   border-color: #DDEEF4;
@@ -61,7 +67,6 @@ p {
   position: inherit;
 }
 
-/* Dropdown Content (Hidden by Default) */
 .dropdown-content {
   background-color: #DDEEF4;
   border: none;
