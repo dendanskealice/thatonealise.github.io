@@ -5,53 +5,38 @@ $(document).ready(function() {
         "Jeg skal fortælle dig.",
     ];
 
+    let writingTimeout = 3; // in seconds
+    let writingTimer = 0;
+    let writingTimerSet = false;
+
     const questions = new Map();
     questions.set("Hvem er du?", "about");
     questions.set("hvem er du?", "about");
     questions.set("Hvem er du", "about");
     questions.set("hvem er du", "about");
 
-    let answerContent = $("#user-inquiry-content");
+    let lastQuestion = "";
 
     let questionField = $("#user-question-field");
     let questionCanvas = $("#user-question-canvas");
     let questionCanvasColor = questionCanvas.css("border-color");
     let questionEraseBtn = $("#question-erase");
-    let questionEraseBtnColor = questionEraseBtn.css("border-color");
+
+    let answerContent = $("#user-inquiry-content");
 
     let welcomeText = $("#alice-ask");
     let responseText = $("#alice-tell");
 
-    let writingTimeout = 3; // in seconds
-    let writingTimer = 0;
-    let writingTimerSet = false;
-
     let questionCanvasContext = new handwriting.Canvas(document.getElementById("user-question-canvas"));
     questionCanvasContext.setLineWidth(2);
+    questionCanvasContext.setCallBack(function(data,err) { getAnswer(data, err); });
+    questionCanvasContext.setInputCallBack(function() { resetTimeoutCountdown() });
     questionCanvasContext.setOptions(
         {
             language: "da",
             numOfReturn: 1
         }
     );
-
-    questionCanvasContext.setCallBack(function(data, err) {
-        if (err) {
-            throw err;
-        } else {
-            let question = questions.get(data[0]);
-            console.log(data);
-            if (question !== undefined) {
-                $.get("inquires/" + question + ".html", function(answer) {
-                    answerQuestion(answer); 
-                });
-            }
-        }
-    });
-
-    questionCanvasContext.setInputCallBack(function() {
-        resetTimeoutCountdown();
-    });
 
     let askedBefore = false;
     async function answerQuestion(answer) {
@@ -61,13 +46,21 @@ $(document).ready(function() {
             responseText.fadeOut(fadeSpeed);
             await sleep(sleepDuration);
         }
-        responseText.text(responses[Math.floor(Math.random() * responses.length)]);
-        answerContent.empty();
-        answerContent.append(answer);
-        responseText.fadeIn(fadeSpeed);
-        await sleep(sleepDuration);
-        answerContent.fadeIn(sleepDuration);
-        await sleep(sleepDuration);
+
+        if (answer !== null) {
+            responseText.text(responses[Math.floor(Math.random() * responses.length)]);
+            answerContent.empty();
+            answerContent.append(answer);
+            responseText.fadeIn(fadeSpeed);
+            await sleep(sleepDuration);
+            answerContent.fadeIn(sleepDuration);
+            await sleep(sleepDuration);
+        } else {
+            responseText.text("Jeg forstår ikke hvad du siger.");
+            responseText.fadeIn(fadeSpeed);
+            await sleep(sleepDuration);
+        }
+
         if (!askedBefore) {
             askedBefore = true;
         }
@@ -104,15 +97,31 @@ $(document).ready(function() {
 
     function resetTimeoutCountdown() {
         questionCanvas.stop();
-        questionEraseBtn.stop();
         questionCanvas.css("border-color", questionCanvasColor);
         questionCanvas.animate({borderColor:"transparent"}, writingTimeout * 1000);
-        questionEraseBtn.css("color", questionEraseBtnColor);
-        questionEraseBtn.animate({color:"black"}, writingTimeout * 1000);
         writingTimer = writingTimeout;
         if (!writingTimerSet) {
             writingTimerSet = true;
             beginTimeoutCountdown();
+        }
+    }
+
+    function getAnswer(data, err) {
+        if (err) {
+            answerQuestion(null);
+        } else {
+            let question = questions.get(data[0]);
+            console.log(data);
+            if (question !== lastQuestion) {
+                if (question !== undefined) {
+                    $.get("inquires/" + question + ".html", function(answer) {
+                        answerQuestion(answer);
+                        lastQuestion = question;
+                    });
+                } else {
+                    answerQuestion(null);
+                }
+            }
         }
     }
 });
